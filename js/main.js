@@ -1002,25 +1002,25 @@ else if(selectbox.value === "11-20"){
     Change();Quizset();
     }
    else if(selectbox.value === "31-40"){
-    function Change() { [a, h, e,f,g,max] = [30, 38, 40,40,40,60];}
+    function Change() { [a, h, e,f,g,max] = [30, 38, 40,40,40,140];}
     Change();Quizset();    
       }
     
 else if(selectbox.value === "41-50"){
-        function Change() { [a, h, e,f,g,max] = [40, 48, 50,50,50,60];}
+        function Change() { [a, h, e,f,g,max] = [40, 48, 50,50,50,180];}
         Change();Quizset();    
           }
       
   else if(selectbox.value === "51-60"){
-             function Change() { [a, h, e,f,g,max] = [50, 58, 60,60,60,60];}
+             function Change() { [a, h, e,f,g,max] = [50, 58, 60,60,60,180];}
              Change();Quizset();    
                }
  else if(selectbox.value === "61-70"){
-              function Change() { [a, h, e,f,g,max] = [60, 68, 70,70,70,60];}
+              function Change() { [a, h, e,f,g,max] = [60, 68, 70,70,70,180];}
               Change();Quizset();    
                 }
 else if(selectbox.value === "71-80"){     
-                function Change() { [a, h, e,f,g,max] = [70, 78, 0,0,0,60];}
+                function Change() { [a, h, e,f,g,max] = [70, 78, 80,80,80,180];}
                 Change();Quizset();    
                   }
 else if(selectbox.value === "81-90"){
