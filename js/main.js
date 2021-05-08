@@ -9,6 +9,17 @@ const item1 = document.createElement('li');
 const item2 = document.createElement('li');
 const item3 = document.createElement('li');
 const item4 = document.createElement('li');
+const close = document.getElementById('close');
+const modal = document.getElementById('modal');
+const modal2 = document.getElementById('modal2');
+const modal3 = document.getElementById('modal3');
+const okay = document.getElementById('okay');
+let answer = document.getElementById('answer');
+const isCorrected = document.getElementById('isCorrected');
+
+
+
+
 
 const quizSet = [
   {q:`letter`,c:`手紙、文字`},
@@ -474,14 +485,14 @@ const QuizElse =[
   {q:`everything`,c:`何もかも`},
   {q:`everyone`,c:`誰でも、みんな`},
   {q:`another`,c:`もう１つ、別のもの`},
-  {q:`for ～`,c:`～に向かって、～の間`},
-  {q:`like ～`,c:`～のような[に]`},
-  {q:`by ～`,c:`～によって、～までに`},
-  {q:`over ～`,c:`～の上に、を越えて`},
-  {q:`around ～`,c:`～の周りに`},
-  {q:`across ～`,c:`～を横切って`},
-  {q:`among ～`,c:`（3つ以上のもの）の間に`},
-  {q:`until ～`,c:`～まで（ずっと）`},
+  {q:`for`,c:`～に向かって、～の間`},
+  {q:`like`,c:`～のような[に]`},
+  {q:`by `,c:`～によって、～までに`},
+  {q:`over `,c:`～の上に、を越えて`},
+  {q:`around `,c:`～の周りに`},
+  {q:`across `,c:`～を横切って`},
+  {q:`among `,c:`（3つ以上のもの）の間に`},
+  {q:`until `,c:`～まで（ずっと）`},
   {q:`because`,c:`なぜならば、～ので`},
   {q:`can`,c:`～することができる`},
   {q:`could`,c:`～することができた`},
@@ -1068,24 +1079,28 @@ else if(selectbox.value === "171-180"){
     location.reload();
   }
   function Quizset () {
+    choice1.removeEventListener('click',event);
     const b = Math.floor(Math.random() * (max - e)) + e ;
     let c = Math.floor(Math.random() * (max - f)) + f ;
     let d = Math.floor(Math.random() * (max - g)) + g ;
+    
   Qnum.textContent = `No.${a + 1}`;
   question.textContent = quizSet[a].q;
-
+  
   var speak   = new SpeechSynthesisUtterance();
   speak.text  = question.textContent;
-  speak.rate  = 1;   speak.pitch = 1;
-  speak.lang  = 'en-US'; 
+  speak.rate  = 0.7; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+  speak.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+  speak.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
   
   speechSynthesis.speak(speak);
   
-
-while(choice1.firstChild){
+  
+  
+  while(choice1.firstChild){
   choice1.removeChild(choice1.firstChild);
-}
-
+  }
+  
   item1.textContent = quizSet[a].c;
   const ul1 = document.querySelector('ul');
     ul1.appendChild(item1);
@@ -1101,10 +1116,10 @@ while(choice1.firstChild){
      item4.textContent = WrongAns[d];
      const ul3 = document.querySelector('ul');
        ul.appendChild(item4);
-
-
+  
+  
        function shuffle() {
-
+  
         const x = Math.floor(Math.random() * 4 + 1) ;
         //console.log(x);
         
@@ -1126,55 +1141,83 @@ while(choice1.firstChild){
       }
       
       shuffle();
-
+  
       function checkAnswer(){
           
         let event = function(e){
           let t = e.target;
+  
+  
           if(t == item1){
-            
-            alert('正解👍');
-            
-          choice1.removeEventListener('click',event);
-          if(a > h){
-            var Finish   = new SpeechSynthesisUtterance();
-            Finish.text  = 'Great!!Good job!!';
-            Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-            Finish.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-            Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-            speechSynthesis.speak(Finish);
-
-               alert(`合格!!`)
-              location.reload();
-          }else{
-            a++;
-          }
-          Quizset();
+          //正解の場合
+  
+          modal3.classList.remove('hidden');
+          isCorrected.textContent = `正解！`;  
+  
+          setTimeout(()=>{
+            modal3.classList.add('hidden');
+  
+            choice1.removeEventListener('click',event);
+  
+            //合格の場合
+            if(a > h){
+  
+  
+              var Finish   = new SpeechSynthesisUtterance();
+              Finish.text  = 'Great!!Good job!!';
+              Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+              Finish.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+              Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+              speechSynthesis.speak(Finish);
+    
+              modal.classList.remove('hidden');
+               //alert(`合格!!`)
+                
+                close.addEventListener('click',()=>{
+                  location.reload();
+              })
+  
+            }else{
+                //次の問題へ
+              a++;
+              Quizset();
+            }
+          },500);
       
         }else{
-
-            alert(`不正解🙅 \n 答えは「${item1.textContent}」`); 
-            var OMT   = new SpeechSynthesisUtterance();
-            OMT.text  = 'one more time';
-            OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-            OMT.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-            OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-            speechSynthesis.speak(OMT);
-            alert(`やりなおしです😩`); 
-
-            choice1.removeEventListener('click',event);
-            Change();
-            Quizset();
-            
+          
+            //間違った場合
   
-//            location.reload();
+          modal2.classList.remove('hidden');
+          
+          answer.textContent = ` 
+          "${question.textContent}" は「${item1.textContent}」です。やり直し！`;
+  
+          var OMT   = new SpeechSynthesisUtterance();
+          OMT.text  = 'one more time';
+          OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+          OMT.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+          OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+          speechSynthesis.speak(OMT);
+          
+          okay.addEventListener('click',()=>{
+            modal2.classList.add('hidden');
+            choice1.removeEventListener('click',event);
+          });
+          
+          Change();
+          Quizset();
+  
           }};
   
         choice1.addEventListener('click',event,false);
                 }
        checkAnswer();
+  
+  } 
+  
 
-}
+
 }
 
 let selectbox1 = form.selectbox1;
@@ -1203,25 +1246,28 @@ else if(selectbox1.value === "verb5"){
     } 
 
     function Quizset () {
+      choice1.removeEventListener('click',event);
       const b = Math.floor(Math.random() * (max - e)) + e ;
       let c = Math.floor(Math.random() * (max - f)) + f ;
       let d = Math.floor(Math.random() * (max - g)) + g ;
       
     Qnum.textContent = `No.${a + 1}`;
     question.textContent = QuizVerb[a].q;
-  
+    
     var speak   = new SpeechSynthesisUtterance();
     speak.text  = question.textContent;
-    speak.rate  = 1; 
-    speak.pitch = 1;
-    speak.lang  = 'en-US'; 
+    speak.rate  = 0.7; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+    speak.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+    speak.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
     
     speechSynthesis.speak(speak);
-
-  while(choice1.firstChild){
+    
+    
+    
+    while(choice1.firstChild){
     choice1.removeChild(choice1.firstChild);
-  }
-  
+    }
+    
     item1.textContent = QuizVerb[a].c;
     const ul1 = document.querySelector('ul');
       ul1.appendChild(item1);
@@ -1237,10 +1283,10 @@ else if(selectbox1.value === "verb5"){
        item4.textContent = WrongVerb[d];
        const ul3 = document.querySelector('ul');
          ul.appendChild(item4);
-  
-  
+    
+    
          function shuffle() {
-  
+    
           const x = Math.floor(Math.random() * 4 + 1) ;
           //console.log(x);
           
@@ -1262,50 +1308,82 @@ else if(selectbox1.value === "verb5"){
         }
         
         shuffle();
-  
+    
         function checkAnswer(){
             
           let event = function(e){
             let t = e.target;
-            if(t == item1){alert("正解👍"); 
-            choice1.removeEventListener('click',event);
-            if(a > h){
-              var Finish   = new SpeechSynthesisUtterance();
-              Finish.text  = 'Great!!Good job!!';
-              Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-              Finish.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-              Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-              speechSynthesis.speak(Finish);
-
-               alert(`合格!!`)
-                location.reload();
-            }else{
-              a++;
-            }
-            Quizset();
+    
+    
+            if(t == item1){
+            //正解の場合
+    
+            modal3.classList.remove('hidden');
+            isCorrected.textContent = `正解！`;  
+    
+            setTimeout(()=>{
+              modal3.classList.add('hidden');
+    
+              choice1.removeEventListener('click',event);
+    
+              //合格の場合
+              if(a > h){
+    
+    
+                var Finish   = new SpeechSynthesisUtterance();
+                Finish.text  = 'Great!!Good job!!';
+                Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+                Finish.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+                Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+                speechSynthesis.speak(Finish);
+      
+                modal.classList.remove('hidden');
+                 //alert(`合格!!`)
+                  
+                  close.addEventListener('click',()=>{
+                    location.reload();
+                })
+    
+              }else{
+                  //次の問題へ
+                a++;
+                Quizset();
+              }
+            },500);
         
           }else{
-              alert(`不正解🙅 \n 答えは「${item1.textContent}」`); 
-
-              var OMT   = new SpeechSynthesisUtterance();
-              OMT.text  = 'one more time';
-              OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-              OMT.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-              OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-              speechSynthesis.speak(OMT);
-
-
-              alert(`やりなおしです😩`); 
+            
+              //間違った場合
+    
+            modal2.classList.remove('hidden');
+            
+            answer.textContent = ` 
+            "${question.textContent}" は「${item1.textContent}」です。やり直し！`;
+    
+            var OMT   = new SpeechSynthesisUtterance();
+            OMT.text  = 'one more time';
+            OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+            OMT.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+            OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+            speechSynthesis.speak(OMT);
+            
+            okay.addEventListener('click',()=>{
+              modal2.classList.add('hidden');
               choice1.removeEventListener('click',event);
-              Change();
-              Quizset();
+            });
+            
+            Change();
+            Quizset();
+    
             }};
     
           choice1.addEventListener('click',event,false);
                   }
          checkAnswer();
-  
-  }
+    
+    } 
+    
+    
 }
 
 let selectbox2 = form.selectbox2;
@@ -1329,109 +1407,143 @@ selectbox2.onchange = function(){
       Change();Quizset(); }  
 
       function Quizset () {
-    const b = Math.floor(Math.random() * (max - e)) + e ;
-    let c = Math.floor(Math.random() * (max - f)) + f ;
-    let d = Math.floor(Math.random() * (max - g)) + g ;
-    
-  Qnum.textContent = `No.${a + 1}`;
-  question.textContent = QuizElse[a].q;
-
-  var speak   = new SpeechSynthesisUtterance();
-  speak.text  = question.textContent;
-  speak.rate  = 1; 
-  speak.pitch = 1;
-  speak.lang  = 'en-US'; 
-  
-  speechSynthesis.speak(speak);
-
-while(choice1.firstChild){
-  choice1.removeChild(choice1.firstChild);
-}
-
-  item1.textContent = QuizElse[a].c;
-  const ul1 = document.querySelector('ul');
-    ul1.appendChild(item1);
-  
-    item2.textContent = WrongElse[b];
-    const ul = document.querySelector('ul');
-      ul.appendChild(item2);
-  
-    item3.textContent = WrongElse[c];
-    const ul2 = document.querySelector('ul');
-      ul.appendChild(item3);
-    
-     item4.textContent = WrongElse[d];
-     const ul3 = document.querySelector('ul');
-       ul.appendChild(item4);
-
-
-       function shuffle() {
-
-        const x = Math.floor(Math.random() * 4 + 1) ;
-        //console.log(x);
+        choice1.removeEventListener('click',event);
+        const b = Math.floor(Math.random() * (max - e)) + e ;
+        let c = Math.floor(Math.random() * (max - f)) + f ;
+        let d = Math.floor(Math.random() * (max - g)) + g ;
         
-        if(x == 1){ 
-          ul.insertBefore(item3,item1);
-          ul.insertBefore(item2,item1);
-          ul.insertBefore(item4,item1);
+      Qnum.textContent = `No.${a + 1}`;
+      question.textContent = QuizElse[a].q;
       
-        }else if(x == 2){
-          ul.insertBefore(item1,item4);
-          ul.insertBefore(item2,item1);
-        }else if(x == 3){
-          ul.insertBefore(item1,item3);
-          ul.insertBefore(item2,item1);
-        }
-        else{
-          ul.insertBefore(item4,item2);
-        }
+      var speak   = new SpeechSynthesisUtterance();
+      speak.text  = question.textContent;
+      speak.rate  = 0.7; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+      speak.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+      speak.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+      
+      speechSynthesis.speak(speak);
+      
+      
+      
+      while(choice1.firstChild){
+      choice1.removeChild(choice1.firstChild);
       }
       
-      shuffle();
-
-      function checkAnswer(){
-          
-        let event = function(e){
-          let t = e.target;
-          if(t == item1){alert("正解👍"); 
-          choice1.removeEventListener('click',event);
-          if(a > h){
-            var Finish   = new SpeechSynthesisUtterance();
-            Finish.text  = 'Great!!Good job!!';
-            Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-            Finish.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-            Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-            speechSynthesis.speak(Finish);
-
-             alert(`合格!!`)
-              location.reload();
-          }else{
-            a++;
-          }
-          Quizset();
+      item1.textContent = QuizElse[a].c;
+      const ul1 = document.querySelector('ul');
+        ul1.appendChild(item1);
       
-        }else{
-            alert(`不正解🙅 \n 答えは「${item1.textContent}」`); 
-
-            var OMT   = new SpeechSynthesisUtterance();
-            OMT.text  = 'one more time';
-            OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-            OMT.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-            OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-            speechSynthesis.speak(OMT);
-
-
-            alert(`やりなおしです😩`); 
-            choice1.removeEventListener('click',event);
-            a = 10; h = 18; e = 20;f = 20;g = 20;max =43;
-            location.reload();
-          }};
-  
-        choice1.addEventListener('click',event,false);
+        item2.textContent = WrongElse[b];
+        const ul = document.querySelector('ul');
+          ul.appendChild(item2);
+      
+        item3.textContent = WrongElse[c];
+        const ul2 = document.querySelector('ul');
+          ul.appendChild(item3);
+        
+         item4.textContent = WrongElse[d];
+         const ul3 = document.querySelector('ul');
+           ul.appendChild(item4);
+      
+      
+           function shuffle() {
+      
+            const x = Math.floor(Math.random() * 4 + 1) ;
+            //console.log(x);
+            
+            if(x == 1){ 
+              ul.insertBefore(item3,item1);
+              ul.insertBefore(item2,item1);
+              ul.insertBefore(item4,item1);
+          
+            }else if(x == 2){
+              ul.insertBefore(item1,item4);
+              ul.insertBefore(item2,item1);
+            }else if(x == 3){
+              ul.insertBefore(item1,item3);
+              ul.insertBefore(item2,item1);
+            }
+            else{
+              ul.insertBefore(item4,item2);
+            }
+          }
+          
+          shuffle();
+      
+          function checkAnswer(){
+              
+            let event = function(e){
+              let t = e.target;
+      
+      
+              if(t == item1){
+              //正解の場合
+      
+              modal3.classList.remove('hidden');
+              isCorrected.textContent = `正解！`;  
+      
+              setTimeout(()=>{
+                modal3.classList.add('hidden');
+      
+                choice1.removeEventListener('click',event);
+      
+                //合格の場合
+                if(a > h){
+      
+      
+                  var Finish   = new SpeechSynthesisUtterance();
+                  Finish.text  = 'Great!!Good job!!';
+                  Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+                  Finish.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+                  Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+                  speechSynthesis.speak(Finish);
+        
+                  modal.classList.remove('hidden');
+                   //alert(`合格!!`)
+                    
+                    close.addEventListener('click',()=>{
+                      location.reload();
+                  })
+      
+                }else{
+                    //次の問題へ
+                  a++;
+                  Quizset();
                 }
-       checkAnswer();
-
-}
+              },500);
+          
+            }else{
+              
+                //間違った場合
+      
+              modal2.classList.remove('hidden');
+              
+              answer.textContent = ` 
+              "${question.textContent}" は「${item1.textContent}」です。やり直し！`;
+      
+              var OMT   = new SpeechSynthesisUtterance();
+              OMT.text  = 'one more time';
+              OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+              OMT.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+              OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+              speechSynthesis.speak(OMT);
+              
+              okay.addEventListener('click',()=>{
+                modal2.classList.add('hidden');
+                choice1.removeEventListener('click',event);
+              });
+              
+              Change();
+              Quizset();
+      
+              }};
+      
+            choice1.addEventListener('click',event,false);
+                    }
+           checkAnswer();
+      
+      } 
+      
 
 }
 let selectbox3 = form2.selectbox3;
@@ -1469,110 +1581,144 @@ selectbox3.onchange = function(){
     function Change() { [a, h, e,f,g,max] = [90, 98, 20,20,20,89];}
     Change();Quizset(); }
 
-  function Quizset () {
-    const b = Math.floor(Math.random() * (max - e)) + e ;
-    let c = Math.floor(Math.random() * (max - f)) + f ;
-    let d = Math.floor(Math.random() * (max - g)) + g ;
-    
-  Qnum.textContent = `No.${a + 1}`;
-  question.textContent = QuizIdiom[a].q;
-
-  var speak   = new SpeechSynthesisUtterance();
-  speak.text  = question.textContent;
-  speak.rate  = 1; 
-  speak.pitch = 1;
-  speak.lang  = 'en-US'; 
-  
-  speechSynthesis.speak(speak);
-
-
-while(choice1.firstChild){
-  choice1.removeChild(choice1.firstChild);
-}
-
-  item1.textContent = QuizIdiom[a].c;
-  const ul1 = document.querySelector('ul');
-    ul1.appendChild(item1);
-  
-    item2.textContent = WrongIdiom[b];
-    const ul = document.querySelector('ul');
-      ul.appendChild(item2);
-  
-    item3.textContent = WrongIdiom[c];
-    const ul2 = document.querySelector('ul');
-      ul.appendChild(item3);
-    
-     item4.textContent = WrongIdiom[d];
-     const ul3 = document.querySelector('ul');
-       ul.appendChild(item4);
-
-
-       function shuffle() {
-
-        const x = Math.floor(Math.random() * 4 + 1) ;
-        //console.log(x);
-        
-        if(x == 1){ 
-          ul.insertBefore(item3,item1);
-          ul.insertBefore(item2,item1);
-          ul.insertBefore(item4,item1);
+    function Quizset () {
+      choice1.removeEventListener('click',event);
+      const b = Math.floor(Math.random() * (max - e)) + e ;
+      let c = Math.floor(Math.random() * (max - f)) + f ;
+      let d = Math.floor(Math.random() * (max - g)) + g ;
       
-        }else if(x == 2){
-          ul.insertBefore(item1,item4);
-          ul.insertBefore(item2,item1);
-        }else if(x == 3){
-          ul.insertBefore(item1,item3);
-          ul.insertBefore(item2,item1);
-        }
-        else{
-          ul.insertBefore(item4,item2);
-        }
-      }
+    Qnum.textContent = `No.${a + 1}`;
+    question.textContent = QuizIdiom[a].q;
+    
+    var speak   = new SpeechSynthesisUtterance();
+    speak.text  = question.textContent;
+    speak.rate  = 0.7; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+    speak.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+    speak.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+    
+    speechSynthesis.speak(speak);
+    
+    
+    
+    while(choice1.firstChild){
+    choice1.removeChild(choice1.firstChild);
+    }
+    
+    item1.textContent = QuizIdiom[a].c;
+    const ul1 = document.querySelector('ul');
+      ul1.appendChild(item1);
+    
+      item2.textContent = WrongIdiom[b];
+      const ul = document.querySelector('ul');
+        ul.appendChild(item2);
+    
+      item3.textContent = WrongIdiom[c];
+      const ul2 = document.querySelector('ul');
+        ul.appendChild(item3);
       
-      shuffle();
-
-      function checkAnswer(){
+       item4.textContent = WrongIdiom[d];
+       const ul3 = document.querySelector('ul');
+         ul.appendChild(item4);
+    
+    
+         function shuffle() {
+    
+          const x = Math.floor(Math.random() * 4 + 1) ;
+          //console.log(x);
           
-        let event = function(e){
-          let t = e.target;
-          if(t == item1){alert("正解👍"); 
-          choice1.removeEventListener('click',event);
-          if(a > h){
-            var Finish   = new SpeechSynthesisUtterance();
-              Finish.text  = 'Great!!Good job!!';
-              Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-              Finish.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-              Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-              speechSynthesis.speak(Finish);
-
-               alert(`合格!!`)
-                location.reload();
-            }else{
-              a++;
-            }
-            Quizset();
+          if(x == 1){ 
+            ul.insertBefore(item3,item1);
+            ul.insertBefore(item2,item1);
+            ul.insertBefore(item4,item1);
+        
+          }else if(x == 2){
+            ul.insertBefore(item1,item4);
+            ul.insertBefore(item2,item1);
+          }else if(x == 3){
+            ul.insertBefore(item1,item3);
+            ul.insertBefore(item2,item1);
+          }
+          else{
+            ul.insertBefore(item4,item2);
+          }
+        }
+        
+        shuffle();
+    
+        function checkAnswer(){
+            
+          let event = function(e){
+            let t = e.target;
+    
+    
+            if(t == item1){
+            //正解の場合
+    
+            modal3.classList.remove('hidden');
+            isCorrected.textContent = `正解！`;  
+    
+            setTimeout(()=>{
+              modal3.classList.add('hidden');
+    
+              choice1.removeEventListener('click',event);
+    
+              //合格の場合
+              if(a > h){
+    
+    
+                var Finish   = new SpeechSynthesisUtterance();
+                Finish.text  = 'Great!!Good job!!';
+                Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+                Finish.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+                Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+                speechSynthesis.speak(Finish);
+      
+                modal.classList.remove('hidden');
+                 //alert(`合格!!`)
+                  
+                  close.addEventListener('click',()=>{
+                    location.reload();
+                })
+    
+              }else{
+                  //次の問題へ
+                a++;
+                Quizset();
+              }
+            },500);
         
           }else{
-              alert(`不正解🙅 \n 答えは「${item1.textContent}」`); 
-
-              var OMT   = new SpeechSynthesisUtterance();
-              OMT.text  = 'one more time';
-              OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-              OMT.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-              OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-              speechSynthesis.speak(OMT);
-
-
-              alert(`やりなおしです😩`); 
+            
+              //間違った場合
+    
+            modal2.classList.remove('hidden');
+            
+            answer.textContent = ` 
+            "${question.textContent}" は「${item1.textContent}」です。やり直し！`;
+    
+            var OMT   = new SpeechSynthesisUtterance();
+            OMT.text  = 'one more time';
+            OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+            OMT.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+            OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+            speechSynthesis.speak(OMT);
+            
+            okay.addEventListener('click',()=>{
+              modal2.classList.add('hidden');
               choice1.removeEventListener('click',event);
-              Change();Quizset();
-          }};
-  
-        choice1.addEventListener('click',event,false);
-                }
-       checkAnswer();
-
-}  
+            });
+            
+            Change();
+            Quizset();
+    
+            }};
+    
+          choice1.addEventListener('click',event,false);
+                  }
+         checkAnswer();
+    
+    } 
+    
 }
 
 let selectbox4 = form2.selectbox4;
@@ -1604,27 +1750,29 @@ selectbox4.onchange = function(){
     function Change() { [a, h, e,f,g,max] = [70, 78, 0,0,0,69];}
     Change();Quizset(); }
     else { location.reload();}
-  function Quizset () {
+    function Quizset () {
+      choice1.removeEventListener('click',event);
       const b = Math.floor(Math.random() * (max - e)) + e ;
       let c = Math.floor(Math.random() * (max - f)) + f ;
       let d = Math.floor(Math.random() * (max - g)) + g ;
       
     Qnum.textContent = `No.${a + 1}`;
     question.textContent = QuizExpress[a].q;
-
+    
     var speak   = new SpeechSynthesisUtterance();
     speak.text  = question.textContent;
-    speak.rate  = 1; 
-    speak.pitch = 1;
-    speak.lang  = 'en-US'; 
+    speak.rate  = 0.7; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+    speak.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+    speak.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
     
     speechSynthesis.speak(speak);
-
-
-  while(choice1.firstChild){
+    
+    
+    
+    while(choice1.firstChild){
     choice1.removeChild(choice1.firstChild);
-  }
-  
+    }
+    
     item1.textContent = QuizExpress[a].c;
     const ul1 = document.querySelector('ul');
       ul1.appendChild(item1);
@@ -1640,10 +1788,10 @@ selectbox4.onchange = function(){
        item4.textContent = WrongExpress[d];
        const ul3 = document.querySelector('ul');
          ul.appendChild(item4);
-  
-  
+    
+    
          function shuffle() {
-  
+    
           const x = Math.floor(Math.random() * 4 + 1) ;
           //console.log(x);
           
@@ -1665,50 +1813,81 @@ selectbox4.onchange = function(){
         }
         
         shuffle();
-  
+    
         function checkAnswer(){
             
           let event = function(e){
             let t = e.target;
-            if(t == item1){alert("正解👍"); 
-            choice1.removeEventListener('click',event);
-            if(a > h){
-
-              var Finish   = new SpeechSynthesisUtterance();
-              Finish.text  = 'Great!!Good job!!';
-              Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-              Finish.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-              Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-              speechSynthesis.speak(Finish);
-
-               alert(`合格!!`)
-                location.reload();
-            }else{
-              a++;
-            }
-            Quizset();
+    
+    
+            if(t == item1){
+            //正解の場合
+    
+            modal3.classList.remove('hidden');
+            isCorrected.textContent = `正解！`;  
+    
+            setTimeout(()=>{
+              modal3.classList.add('hidden');
+    
+              choice1.removeEventListener('click',event);
+    
+              //合格の場合
+              if(a > h){
+    
+    
+                var Finish   = new SpeechSynthesisUtterance();
+                Finish.text  = 'Great!!Good job!!';
+                Finish.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+                Finish.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+                Finish.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+                speechSynthesis.speak(Finish);
+      
+                modal.classList.remove('hidden');
+                 //alert(`合格!!`)
+                  
+                  close.addEventListener('click',()=>{
+                    location.reload();
+                })
+    
+              }else{
+                  //次の問題へ
+                a++;
+                Quizset();
+              }
+            },500);
         
           }else{
-              alert(`不正解🙅 \n 答えは「${item1.textContent}」`); 
-
-              var OMT   = new SpeechSynthesisUtterance();
-              OMT.text  = 'one more time';
-              OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
-              OMT.pitch = 1;　// 声の高さ 0-2 初期値:1(0で女性の声) 
-              OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
-              speechSynthesis.speak(OMT);
-
-              alert(`やりなおしです😩`); 
+            
+              //間違った場合
+    
+            modal2.classList.remove('hidden');
+            
+            answer.textContent = ` 
+            "${question.textContent}" は「${item1.textContent}」です。やり直し！`;
+    
+            var OMT   = new SpeechSynthesisUtterance();
+            OMT.text  = 'one more time';
+            OMT.rate  = 1; // 読み上げ速度 0.1-10 初期値:1 (倍速なら2, 半分の倍速なら0.5, )
+            OMT.pitch = 1;// 声の高さ 0-2 初期値:1(0で女性の声) 
+            OMT.lang  = 'en-US'; //(日本語:ja-JP, アメリカ英語:en-US, イギリス英語:en-GB, 中国語:zh-CN, 韓国語:ko-KR)
+            speechSynthesis.speak(OMT);
+            
+            okay.addEventListener('click',()=>{
+              modal2.classList.add('hidden');
               choice1.removeEventListener('click',event);
-              Change();Quizset();
-
+            });
+            
+            Change();
+            Quizset();
+    
             }};
     
           choice1.addEventListener('click',event,false);
                   }
          checkAnswer();
-  
-  }
+    
+    } 
+    
 }
 
 
